@@ -10,8 +10,8 @@ async function onLoad() {
   const hashed = await sha256(codeVerifier);
   const codeChallenge = base64encode(hashed);
 
-  const redirectUri = "http://localhost:5500/callback";
-  //const redirectUri = window.location.protocol + window.location.host;
+  //const redirectUri = "http://localhost:5500/callback";
+  const redirectUri = window.location.protocol + window.location.host + "/callback.html";
 
   const scope = "user-read-private user-read-email";
   const authUrl = new URL("https://accounts.spotify.com/authorize");
