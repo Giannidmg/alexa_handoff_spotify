@@ -5,22 +5,18 @@ async function onLoad() {
   const clientId = urlParams.get("client_id");
   const clientSecret = urlParams.get("client_secret");
   const deviceName = decodeURIComponent(urlParams.get("device_name"));
+  const showDevice = urlParams.get("show_device");
 
   // salvataggio in local storage
   localStorage.setItem("client_id", clientId);
   localStorage.setItem("client_secret", clientSecret);
   localStorage.setItem("device_name", deviceName);
+  localStorage.setItem("show_device", showDevice);
 
   document.getElementById("client_id").innerHTML = clientId;
 
-  // const codeVerifier = generateRandomString(64);
-  // localStorage.setItem("code_verifier", codeVerifier);
-
-  // const hashed = await sha256(codeVerifier);
-  // const codeChallenge = base64encode(hashed);
-
   //genero chiamata REst per AUTH
-  const redirectUri = window.location.protocol + "//" + window.location.host + "/callback.html";
+  const redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "/callback.html";
 
   const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state";
   const authUrl = new URL("https://accounts.spotify.com/authorize");
@@ -55,7 +51,7 @@ async function onCallback() {
   // genero la Basic per Autenticazione
   var authb64 = "Basic " + btoa(clientId + ':' + clientSecret);
 
-  var redirectUri = window.location.protocol + "//" + window.location.host + "/callback.html";
+  var redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "/callback.html";
   //var redirect_uri = "http://localhost:5500/callback.html";
 
   // avvio la chiamata per il token
@@ -98,6 +94,7 @@ async function getDevices(){
   const urlParams = new URLSearchParams(window.location.search);
   var accessToken = urlParams.get("access_token");
   var deviceName = urlParams.get("device_name");
+  var showDevice = localStorage.getItem("show_device");
   var auth = "Bearer " + accessToken;
   
   // avvio recuper dei dispositivi
@@ -123,8 +120,13 @@ async function getDevices(){
     device_id: deviceID
   };
 
-  setDeviceUrl.search = new URLSearchParams(params).toString();
-  window.location.href = setDeviceUrl.toString();
+  if (showDevice == "true"){
+    document.getElementById("devices").innerHTML = devices;
+  }else{
+    setDeviceUrl.search = new URLSearchParams(params).toString();
+    window.location.href = setDeviceUrl.toString();
+  }
+
 
 
 }
