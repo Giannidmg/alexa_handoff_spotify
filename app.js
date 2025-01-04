@@ -22,11 +22,7 @@ async function onLoad() {
   //genero chiamata REst per AUTH
   const redirectUri = window.location.protocol + "//" + window.location.host + "/callback.html";
 
-  const scope = `user-read-private
-                  user-read-email 
-                  user-read-playback-state 
-                  user-modify-playback-state
-                `;
+  const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state";
   const authUrl = new URL("https://accounts.spotify.com/authorize");
 
   const params = {
