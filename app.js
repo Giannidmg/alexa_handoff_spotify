@@ -13,8 +13,6 @@ async function onLoad() {
   localStorage.setItem("device_name", deviceName);
   localStorage.setItem("show_devices", showDevice);
 
-  document.getElementById("client_id").innerHTML = clientId;
-
   //genero chiamata REst per AUTH
   const redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "callback.html";
   console.log("redirectUri:" ,redirectUri)
@@ -101,13 +99,20 @@ async function getDevices(){
   const body = await fetch(url, payload);
   const response = await body.json();
   const devices = await response.devices;
+  if(devices == undefined){
+    document.getElementById("img-loader").style.display = "none";
+    document.getElementById("img-error").style.display = "block";
+    document.getElementById("text-status").innerHTML = "ERROR";
+    return;
+  }
     
   if (showDevice == "true"){
     var string = "";
     devices.forEach(device => {
-      string = string + "<p>" + device.name + "</p>"
+      string = string + '<li class="device">' + device.name + '</li>'
     });
-    
+    document.getElementById("box-status").style.display = "none";
+    document.getElementById("box-devices").style.display = "flex";
     document.getElementById("devices").innerHTML = string;
   }else{
     
@@ -137,7 +142,13 @@ async function setNewDevice(){
   };
 
   const body = await fetch(url, payload);
-  console.log("body: ",body)
+  console.log("body: ",body.response)
+  if(!body.responce){
+    document.getElementById("img-loader").style.display = "none";
+    document.getElementById("img-error").style.display = "block";
+    document.getElementById("text-status").innerHTML = "ERROR";
+    return;
+  }
   var response = await body.json();  
   
   // avvio switch del dispositivo
@@ -151,8 +162,17 @@ async function setNewDevice(){
       "device_ids": [deviceID]
     })
   };
-  fetch(url, payload);
+  var responce = await fetch(url, payload);
+  if (responce.ok){
+    document.getElementById("img-loader").style.display = "none";
+    document.getElementById("img-done").style.display = "block";
+    document.getElementById("text-status").innerHTML = "Conneted";
+  }else{
+    document.getElementById("img-loader").style.display = "none";
+    document.getElementById("img-error").style.display = "block";
+    document.getElementById("text-status").innerHTML = "ERROR";
 
+  }
 }
 
 function sha256(plain) {
