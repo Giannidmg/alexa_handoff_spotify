@@ -16,7 +16,8 @@ async function onLoad() {
   document.getElementById("client_id").innerHTML = clientId;
 
   //genero chiamata REst per AUTH
-  const redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "/callback.html";
+  const redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "callback.html";
+  console.log("redirectUri:" ,redirectUri)
 
   const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state";
   const authUrl = new URL("https://accounts.spotify.com/authorize");
@@ -38,7 +39,6 @@ async function onCallback() {
   // recupero il code generato da URL
   const urlParams = new URLSearchParams(window.location.search);
   let code = urlParams.get("code");
-  window.document.getElementById("code").innerHTML = code;
 
   // salvo il codice in local storage
   localStorage.setItem("code", code);
@@ -51,8 +51,8 @@ async function onCallback() {
   // genero la Basic per Autenticazione
   var authb64 = "Basic " + btoa(clientId + ':' + clientSecret);
 
-  var redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "/callback.html";
-  //var redirect_uri = "http://localhost:5500/callback.html";
+  var redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname;
+  console.log("redirectUri: ",redirectUri)
 
   // avvio la chiamata per il token
   const url = new URL("https://accounts.spotify.com/api/token");
@@ -77,23 +77,15 @@ async function onCallback() {
   localStorage.setItem("access_token", response.access_token);
   localStorage.setItem("refresh_token", response.refresh_token);
 
-  const deviceUrl = new URL(window.location.protocol + "//" + window.location.host + "/getdevices.html");
-  const params = {
-    access_token: response.access_token,
-    device_name: deviceName
-  };
-
-  deviceUrl.search = new URLSearchParams(params).toString();
-  window.location.href = deviceUrl.toString();
+  getDevices();
 
 }
 
 async function getDevices(){
 
-  // recupero access token da URL
-  const urlParams = new URLSearchParams(window.location.search);
-  var accessToken = urlParams.get("access_token");
-  var deviceName = urlParams.get("device_name");
+  // recupero access token da local content
+  var accessToken = localStorage.getItem("access_token");
+  var deviceName = localStorage.getItem("device_name");
   var showDevice = localStorage.getItem("show_device");
   var auth = "Bearer " + accessToken;
   
@@ -109,39 +101,47 @@ async function getDevices(){
   const body = await fetch(url, payload);
   const response = await body.json();
   const devices = await response.devices;
-
-  var deviceID = devices.map(dev => dev.name == deviceName ? dev.id : null ).filter(id => id != null)[0];
-
-  localStorage.setItem("device_id", deviceID);
-
-  const setDeviceUrl = new URL(window.location.protocol + "//" + window.location.host + "/setdevice.html");
-  const params = {
-    access_token: accessToken,
-    device_id: deviceID
-  };
-
+    
   if (showDevice == "true"){
-    document.getElementById("devices").innerHTML = devices;
+    var string = "";
+    devices.forEach(device => {
+      string = string + "<p>" + device.name + "</p>"
+    });
+    
+    document.getElementById("devices").innerHTML = string;
   }else{
-    setDeviceUrl.search = new URLSearchParams(params).toString();
-    window.location.href = setDeviceUrl.toString();
+    
+  var deviceID = devices.map(dev => dev.name == deviceName ? dev.id : null ).filter(id => id != null)[0];
+  localStorage.setItem("device_id", deviceID);
+  setNewDevice();
+
   }
-
-
 
 }
 
 async function setNewDevice(){
 
-  // recupero access token da URL
-  const urlParams = new URLSearchParams(window.location.search);
-  var accessToken = urlParams.get("access_token");
-  var deviceID = urlParams.get("device_id");
+  // recupero access token da local content
+  var accessToken = localStorage.getItem("access_token");
+  var deviceID = localStorage.getItem("device_id");
   var auth = "Bearer " + accessToken;
-  
-  // avvio recuper dei dispositivi
+
+  // controllo status playback
   const url = new URL("https://api.spotify.com/v1/me/player");
-  const payload = {
+  var payload = {
+    method: "GET",
+    headers: {
+      "Authorization": auth,
+      
+    }
+  };
+
+  const body = await fetch(url, payload);
+  console.log("body: ",body)
+  var response = await body.json();  
+  
+  // avvio switch del dispositivo
+  payload = {
     method: "PUT",
     headers: {
       "Authorization": auth,
@@ -151,6 +151,7 @@ async function setNewDevice(){
       "device_ids": [deviceID]
     })
   };
+  fetch(url, payload);
 
 }
 
