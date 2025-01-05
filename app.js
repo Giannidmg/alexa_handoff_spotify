@@ -103,7 +103,6 @@ async function getDevices(){
     document.getElementById("img-loader").style.display = "none";
     document.getElementById("img-error").style.display = "block";
     document.getElementById("text-status").innerHTML = "ERROR";
-    return;
   }
     
   if (showDevice == "true"){
