@@ -5,13 +5,13 @@ async function onLoad() {
   const clientId = urlParams.get("client_id");
   const clientSecret = urlParams.get("client_secret");
   const deviceName = decodeURIComponent(urlParams.get("device_name"));
-  const showDevice = urlParams.get("show_device");
+  const showDevice = urlParams.get("show_devices");
 
   // salvataggio in local storage
   localStorage.setItem("client_id", clientId);
   localStorage.setItem("client_secret", clientSecret);
   localStorage.setItem("device_name", deviceName);
-  localStorage.setItem("show_device", showDevice);
+  localStorage.setItem("show_devices", showDevice);
 
   document.getElementById("client_id").innerHTML = clientId;
 
@@ -86,7 +86,7 @@ async function getDevices(){
   // recupero access token da local content
   var accessToken = localStorage.getItem("access_token");
   var deviceName = localStorage.getItem("device_name");
-  var showDevice = localStorage.getItem("show_device");
+  var showDevice = localStorage.getItem("show_devices");
   var auth = "Bearer " + accessToken;
   
   // avvio recuper dei dispositivi
