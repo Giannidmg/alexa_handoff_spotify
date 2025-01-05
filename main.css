@@ -5,14 +5,11 @@ body{
 }
 div{
     border-radius: 16px;
-    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    
-    
+    gap: 10px;   
 }
 path{
     fill: #1DB954;
@@ -22,35 +19,33 @@ path{
     height: 25px;
 }
 .header{
+    margin-top: 20px;
+    margin-bottom: 20px;
     flex-direction: row !important;
-    width: 100vw;
+    width: 100%;
+    height: 9vh;
 }
 .body{
+    padding: 20px;
+    height: 80vh;
     background-color: #212121;
     flex-direction: column;
-    padding-left: 3%;
-    padding-right: 3%;
-    height: 60vh;
-    width: 91,5vw;
-    align-content: end;
+    justify-content: end;
     
 }
 .box{
     width: 85px;
     height: 25px;
     background-color: #212121;
-    /* background-color: #535353;     */
     border-radius: 50px;
     border-radius: 50px;
-
-
 }
 .content{
     color: black;
     background-color: #f7f9f8;
-    padding: 50px;
+    padding: 10%;
     border-radius: 50px;
-    height: 50vh;
+    height: 70%;
     gap: 0px;
 }
 
@@ -81,13 +76,13 @@ path{
     height: fit-content;
 }
 .text-title{
-    font-size: 40px;
+    font-size: 30px;
     font-weight: bold;
     margin-block-start: 5px;
     margin-block-end: 5px;
 }
 .text-body{
-    font-size: 20px;
+    font-size: 15px;
     margin-block-start: 5px;
     margin-block-end: 5px;
 }
