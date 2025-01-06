@@ -1,4 +1,5 @@
 async function onLoad() {
+  console.log("onLoad");
 
   // recuper informazioni dalla chiamata
   const urlParams = new URLSearchParams(window.location.search);
@@ -15,7 +16,6 @@ async function onLoad() {
 
   //genero chiamata REst per AUTH
   const redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname + "callback.html";
-  console.log("redirectUri:" ,redirectUri)
 
   const scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state";
   const authUrl = new URL("https://accounts.spotify.com/authorize");
@@ -33,6 +33,7 @@ async function onLoad() {
 }
 
 async function onCallback() {
+  console.log("onCallback");
 
   // recupero il code generato da URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -44,13 +45,11 @@ async function onCallback() {
   // recupero i dati da local storage
   var clientId = localStorage.getItem("client_id");
   var clientSecret = localStorage.getItem("client_secret");
-  var deviceName = localStorage.getItem("device_name");
 
   // genero la Basic per Autenticazione
   var authb64 = "Basic " + btoa(clientId + ':' + clientSecret);
 
   var redirectUri = window.location.protocol + "//" + window.location.host + window.location.pathname;
-  console.log("redirectUri: ",redirectUri)
 
   // avvio la chiamata per il token
   const url = new URL("https://accounts.spotify.com/api/token");
@@ -80,6 +79,7 @@ async function onCallback() {
 }
 
 async function getDevices(){
+  console.log("getDevices");
 
   // recupero access token da local content
   var accessToken = localStorage.getItem("access_token");
@@ -103,6 +103,7 @@ async function getDevices(){
     document.getElementById("img-loader").style.display = "none";
     document.getElementById("img-error").style.display = "block";
     document.getElementById("text-status").innerHTML = "ERROR";
+    return;
   }
     
   if (showDevice == "true"){
@@ -124,31 +125,32 @@ async function getDevices(){
 }
 
 async function setNewDevice(){
+  console.log("setNewDevice");
 
   // recupero access token da local content
   var accessToken = localStorage.getItem("access_token");
   var deviceID = localStorage.getItem("device_id");
   var auth = "Bearer " + accessToken;
 
-  // controllo status playback
   const url = new URL("https://api.spotify.com/v1/me/player");
-  var payload = {
-    method: "GET",
-    headers: {
-      "Authorization": auth,
-      
-    }
-  };
 
-  const body = await fetch(url, payload);
-  console.log("body: ",body.response)
-  if(!body.responce){
-    document.getElementById("img-loader").style.display = "none";
-    document.getElementById("img-error").style.display = "block";
-    document.getElementById("text-status").innerHTML = "ERROR";
-    return;
-  }
-  var response = await body.json();  
+  // controllo status playback
+  // var payload = {
+  //   method: "GET",
+  //   headers: {
+  //     "Authorization": auth,    
+  //   }
+  // };
+
+  // const body = await fetch(url, payload);
+  // console.log("response: ", body.json())
+  // // if(!body.response){
+  // //   document.getElementById("img-loader").style.display = "none";
+  // //   document.getElementById("img-error").style.display = "block";
+  // //   document.getElementById("text-status").innerHTML = "ERROR";
+  // //   return;
+  // // }
+  // var response = await body.json();  
   
   // avvio switch del dispositivo
   payload = {
@@ -161,8 +163,8 @@ async function setNewDevice(){
       "device_ids": [deviceID]
     })
   };
-  var responce = await fetch(url, payload);
-  if (responce.ok){
+  response = await fetch(url, payload);
+  if (response.ok){
     document.getElementById("img-loader").style.display = "none";
     document.getElementById("img-done").style.display = "block";
     document.getElementById("text-status").innerHTML = "Conneted";
@@ -170,7 +172,6 @@ async function setNewDevice(){
     document.getElementById("img-loader").style.display = "none";
     document.getElementById("img-error").style.display = "block";
     document.getElementById("text-status").innerHTML = "ERROR";
-
   }
 }
 
